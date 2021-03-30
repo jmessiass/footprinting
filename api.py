@@ -14,37 +14,26 @@ def wordpress():
     scan_response = open(url_json['url'],)
     # CONVERTENDO EM JSON
     scan_data = json.load(scan_response)
-
     # BUSCA AS INFORMACOES DE TECNOLOGIAS Q ESTAO SENDO USADAS E SUAS VERSOES
-    wordpress_response = wp_web_server(scan_data['interesting_findings'][0]['interesting_entries'], wordpress_response)
     wordpress_response = get_infos('xml_rpc', scan_data['interesting_findings'][1]['url'], wordpress_response)
     wordpress_response = get_infos('readme', scan_data['interesting_findings'][2]['url'], wordpress_response)
     wordpress_response = get_infos('wp_cron', scan_data['interesting_findings'][3]['url'], wordpress_response)
-
-    # VERSAO DO WORDPRESS
-    if scan_data['version']['number']:
-        wordpress_response.update({"wp_version":scan_data['version']['number']})
-
-    # ISSUES MOSTRANDO A VERSAO
-    if scan_data['version']['interesting_entries']:
-        wordpress_response.update({"wp_version_issue":scan_data['version']['interesting_entries']})
-
-    # TEMA USADO
-    if scan_data['main_theme']['style_name']:
-        theme = '%s %s' % (scan_data['main_theme']['style_name'], scan_data['main_theme']['version']['number'])
-        wordpress_response.update({"theme":theme})
-
-    # PLUGINS
-    if scan_data['plugins']:
-        plugins = []
-        plugins_values = []
-        for plugin in scan_data['plugins'].keys():
-            plugins_values.append(plugin)
-        for value in plugins_values:
-            plugins.append('%s %s' % (value, scan_data['plugins'][value]['version']['number']))
-            wordpress_response.update({"plugins":plugins})
-
+    wordpress_response = get_infos('wp_version', scan_data['version']['number'], wordpress_response)
+    wordpress_response = get_infos('wp_version_issue', scan_data['version']['interesting_entries'], wordpress_response)
+    wordpress_response = wp_web_server(scan_data['interesting_findings'][0]['interesting_entries'], wordpress_response)
+    wordpress_response = wp_plugins(scan_data['plugins'], wordpress_response)
+    wordpress_response = wp_theme(scan_data['main_theme']['style_name'],
+                                  scan_data['main_theme']['version']['number'],
+                                  wordpress_response)
     return wordpress_response
+
+def get_infos(key, infos, wordpress_response):
+    if infos:
+        # ALIMENTA O JSON COM A KEY E A INFORMAÇÃO RECEBIDA
+        wordpress_response.update({key:infos})
+        return wordpress_response
+    else:
+        return False
 
 def wp_web_server(web_server_infos, wordpress_response):
     if web_server_infos:
@@ -57,9 +46,23 @@ def wp_web_server(web_server_infos, wordpress_response):
     else:
         return False
 
-def get_infos(key, infos, wordpress_response):
-    if infos:
-        wordpress_response.update({key:infos})
+def wp_theme(theme_infos, version, wordpress_response):
+    if theme_infos:
+        theme = '%s %s' % (theme_infos, version)
+        wordpress_response.update({"theme":theme})
+        return wordpress_response
+    else:
+        return False
+
+def wp_plugins(plugin_infos, wordpress_response):
+    if plugin_infos:
+        plugins = []
+        plugins_values = []
+        for plugin in plugin_infos.keys():
+            plugins_values.append(plugin)
+        for value in plugins_values:
+            plugins.append('%s %s' % (value, plugin_infos[value]['version']['number']))
+            wordpress_response.update({"plugins":plugins})
         return wordpress_response
     else:
         return False

@@ -1,53 +1,54 @@
-# Footprinting WordPress
-## Saída do WpScan tratada
+# Python API WpScan
+## Web API Server using Python and WpScan
 
-Footprinting WordPress é um script escrito em python no formato de RestFull API, que faz a leitura da saída do wpscan e devolve um json com as informações tratadas, tudo através de uma requisição POST no servidor web local criado.
+This tool is writed in python and we have a web API server using flask and python. We need to make a POST request passing an output file from WpScan tool and the api.py will return a clean json answer.
 
 ## Features
 
-- Criação de API em Python com poucas linhas de código
-- Leitura, escrita e saída em JSON
-- Leitura da saída do WpScan
-- Tratamento das informações coletadas pelo WpScan
-- Fácil de rodar e pode ser reutilizado para outras ferramentas
+- API creation using Python with few line codes;
+- Read, write and answer in JSON;
+- Read the output file from WpScan;
+- Information's organization collected from WpScan;
+- Easy to run and can be reused to others output files;
 
 ## Tech
 
-Foi utilizado alguns projetos de código aberto:
+It was used some open source projects;
 
-- [Python] - Linguagem utilizada para desenvolver o script.
-- [Flask] - Framework web para criação da API.
-- [WpScan] - Ferramenta que busca informações em apps WordPress.
+- [Python] - Language used to write the code.
+- [Flask] - Python framework to create the API.
+- [WpScan] - Tool that find information about WordPress.
 
 ## Installation
 
-Para conseguir usar a ferramenta, você vai precisar de um arquivo JSON com a saída do WpScan que você tenha executado em algum site WordPress.
+To use this tool you need an output file in JSON format from WpScan tool that you already runned in a WordPress application.
+
 
 ```sh
 wpscan --url http://sitewordpress.com/ -f json -o wpscan
 ```
-Foi utilizado o python 3.9.2 na PoC.
 
-Baixe o projeto, acesse a pasta footprinting e com um python3 instale o flask através do pip.
+It was used Python version 3.9.2 in the PoC.
+
+Do clone of the project. Access the folder python-api-wpscan and install the flask lib using pip.
+
 
 ```sh
-git clone https://github.com/jmessiass/footprinting.git
+git clone https://github.com/jmessiass/python-api-wpscan.git
 cd footprinting
 pip install flask
 ```
 
 ## How to Use
 
-Após ter feito os passos acima basta rodar o script api.py.
+After do the previous steps just run the api.py script.
 
 ```sh
 python api.py
 ```
-
-Será criado uma API na porta 5000, basta realizar o curl abaixo na sua API criada, passando o arquivo JSON do WpScan, aqui chamado de wpscan.
+Will be created an API in port 5000. After that you need to execute a CURL request in your created API. Pass the output file in JSON format from WpScan.
 
 ```sh
 curl -X POST -H "Content-Type: application/json" -d '{"url":"~/wpscan"}' http://localhost:5000/wordpress
 ```
-
-Após realizar a requição POST, a ferramenta vai retornar um JSON com as informações tratadas, retornando apenas o que enxergo de importante para uma fase de information gathering, podendo o script ser customizado e adaptado para os cenários que quiserem.
+After you realized the POST request the tool will return a JSON output with the information cleaned about the WordPress application. Returning just the most important information about the app. This script can be customized and adapt to others scenarios that you need.

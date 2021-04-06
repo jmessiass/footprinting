@@ -14,6 +14,7 @@ def wordpress():
     scan_response = open(url_json['url'],)
     # CONVERTENDO EM JSON
     scan_data = json.load(scan_response)
+    scan_response.close()
     # BUSCA AS INFORMACOES DE TECNOLOGIAS Q ESTAO SENDO USADAS E SUAS VERSOES
     wordpress_response = get_infos('xml_rpc', scan_data['interesting_findings'][1]['url'], wordpress_response)
     wordpress_response = get_infos('readme', scan_data['interesting_findings'][2]['url'], wordpress_response)
